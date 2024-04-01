@@ -1,13 +1,9 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getMessaging, onMessage } from "firebase/messaging";
-import { getToken } from "firebase/messaging";
-// import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { toast } from "react-toastify";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// the firebase config object
 const firebaseConfig = {
   apiKey: "AIzaSyCyYSBqsyPx9FNkTQeky94e2sAVfsoDHSQ",
   authDomain: "practiceproject-64d46.firebaseapp.com",
@@ -18,20 +14,20 @@ const firebaseConfig = {
   measurementId: "G-9QWBFWERRJ",
 };
 
-// Initialize Firebase
+// Initialize Firebase => a container created
 const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
 
+// Initialize Firebase Cloud Messaging and get a reference to the service
 const messaging = getMessaging(app);
-// const analytics = getAnalytics(app);
 
 export { messaging };
 
 // requests the browser’s permission to send notifications and resolves with a token if the request is granted
 export const onMessageListener = () =>
-  new Promise((resolve) => {
-    onMessage(messaging, (payload) => {
-      console.log("payload", payload);
-      resolve(payload);
+  onMessage(messaging, (payload) => {
+    console.log("payload", payload);
+    toast.success(payload.notification.title);
+    new Notification(payload.notification.title, {
+      body: payload.notification.body,
     });
   });

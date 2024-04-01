@@ -1,5 +1,5 @@
 import "./App.css";
-import { getToken, onMessage } from "firebase/messaging";
+import { getToken } from "firebase/messaging";
 import { messaging, onMessageListener } from "../firebase/firebseInit";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -8,14 +8,16 @@ import "react-toastify/dist/ReactToastify.css";
 function App() {
   useEffect(() => {
     function requestPermission() {
+      console.log("Requesting permission...");
       Notification.requestPermission().then((permission) => {
         if (permission === "granted") {
-          console.log("Notification permission granted.");
+          console.log("notification permission granted");
           getToken(messaging, {
             vapidKey:
               "BIts8SV8Tofodre6gUiyQxDJfWGsKJ5P1ag1MIAcGuk0gXRXCe9dedFWbW9Ol_c4m9KTsEDqf1i-TmZA46wXSE8",
           })
             .then((token) => {
+              // ** send this token to notification api to your backend
               console.log("token", token);
             })
             .catch((err) => {
@@ -26,16 +28,15 @@ function App() {
         }
       });
     }
-    requestPermission();
-    onMessageListener()
-      .then((payload) => {
-        console.log(payload.data, "payload notification");
-        toast.success(payload.data.message);
-      })
-      .catch((err) => {
-        console.log(err, "error");
-      });
-  }, []);
+    // Check if the browser supports notifications
+    if (!("Notification" in window)) {
+      alert("This browser does not support desktop notification");
+    } else if (Notification.permission !== "granted") {
+      requestPermission();
+    }
+    onMessageListener();
+  }, [onMessageListener]);
+
   return <div>Jamal</div>;
 }
 
